@@ -1,0 +1,25 @@
+# Core web framework
+fastapi==0.110.2
+uvicorn[standard]==0.29.0
+
+# Input validation / typing
+pydantic==2.7.1
+
+# HTTP clients
+requests==2.32.3
+httpx==0.27.0
+
+# CLI enhancements (optional)
+rich==13.7.1
+
+# SSH (for remote tool execution if using paramiko)
+paramiko==3.4.0
+
+# LLM integrations (OpenAI, if needed)
+openai==1.30.1
+python-dotenv==1.0.1
+
+# Dev tools
+black==24.4.2
+ruff==0.4.4
+pre-commit==3.7.1
