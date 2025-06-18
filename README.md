@@ -16,24 +16,3 @@ PentAiA is a secure, AI-assisted pentesting platform that allows security profes
 2. Activate the virtualenv
 3. Run the FastAPI server
 4. Start issuing commands via CLI or WebUI (optional)
-
-# Requirements
-
-## Functional
-
-- LLM Orchestration via OpenAI (ChatGPT), Claude, or local model
-- Tool Integrations:
-  - Core: `nmap`, `sqlmap`, `whatweb`, `wpscan`
-  - Optional: BurpSuite Pro API, Rapid7 Nexpose API
-- JSON-RPC-like API over FastAPI
-- Input validation and sanitization
-- Background tasks and result tracking
-- Interfaces: CLI (primary), optional Web UI
-
-## Non-Functional
-
-- Runs on Ubuntu 24.04.2 LTS
-- Tools isolated on Kali Linux VM
-- Secure communication (via HTTP or SSH)
-- Logs and audits all execution
-- Single-user MVP; modular architecture for expansion
