@@ -31,3 +31,34 @@ def run_msf_module(module_type: str, module_name: str, params: dict) -> str:
         return output.strip()
     except Exception as e:
         return f"Module run error: {str(e)}"
+
+def exploit_with_payload(exploit_name: str, payload_name: str, exploit_args: dict, payload_args: dict) -> str:
+    try:
+        client = _get_client()
+        exploit = client.modules.use('exploit', exploit_name)
+        exploit.payload = payload_name
+
+        for k, v in exploit_args.items():
+            exploit[k] = v
+        for k, v in payload_args.items():
+            exploit[k] = v
+
+        console = client.consoles.console()
+        return console.run_module_with_output(exploit).strip()
+    except Exception as e:
+        return f"Exploit error: {str(e)}"
+
+def list_sessions() -> dict:
+    try:
+        client = _get_client()
+        return client.sessions.list
+    except Exception as e:
+        return {"error": str(e)}
+
+def interact_session(session_id: int, command: str) -> str:
+    try:
+        client = _get_client()
+        session = client.sessions.session(session_id)
+        return session.run_with_output(command).strip()
+    except Exception as e:
+        return f"Session error: {str(e)}"

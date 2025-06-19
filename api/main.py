@@ -60,5 +60,36 @@ async def mcp(req: Request):
             return {"result": result, "id": job_id}
         except Exception as e:
             return {"error": str(e), "id": job_id}
+        
+    elif method == "msf_exploit":
+        exploit_name = params.get("exploit_name")
+        payload_name = params.get("payload_name")
+        exploit_args = params.get("exploit_args", {})
+        payload_args = params.get("payload_args", {})
+        if not exploit_name or not payload_name:
+            return {"error": "Missing exploit_name or payload_name", "id": job_id}
+        try:
+            result = exploit_with_payload(exploit_name, payload_name, exploit_args, payload_args)
+            return {"result": result, "id": job_id}
+        except Exception as e:
+            return {"error": str(e), "id": job_id}
+
+    elif method == "msf_sessions":
+        try:
+            result = list_sessions()
+            return {"result": result, "id": job_id}
+        except Exception as e:
+            return {"error": str(e), "id": job_id}
+
+    elif method == "msf_session_cmd":
+        session_id = params.get("session_id")
+        command = params.get("command")
+        if session_id is None or not command:
+            return {"error": "Missing session_id or command", "id": job_id}
+        try:
+            result = interact_session(session_id, command)
+            return {"result": result, "id": job_id}
+        except Exception as e:
+            return {"error": str(e), "id": job_id}
 
     return {"error": "Unknown method", "id": job_id}
