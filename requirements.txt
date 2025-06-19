@@ -15,6 +15,9 @@ rich==13.7.1
 # SSH (for remote tool execution if using paramiko)
 paramiko==3.4.0
 
+#Metasploit RPC
+pymetasploit3
+
 # LLM integrations (OpenAI, if needed)
 openai==1.30.1
 python-dotenv==1.0.1

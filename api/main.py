@@ -1,5 +1,8 @@
 from fastapi import FastAPI, Request
 from tools.nmap_runner import run_nmap
+from tools.msf_runner import run_msf_module
+from tools.msf_runner import search_msf_modules
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,6 +37,26 @@ async def mcp(req: Request):
             return {"error": "Missing target", "id": job_id}
         try:
             result = run_nmap(target, options)
+            return {"result": result, "id": job_id}
+        except Exception as e:
+            return {"error": str(e), "id": job_id}
+        
+    elif method == "msf_run_module":
+        module_type = params.get("module_type")
+        module_name = params.get("module_name")
+        module_args = params.get("module_args", {})
+        if not module_type or not module_name:
+            return {"error": "Missing module_type or module_name", "id": job_id}
+        try:
+            result = run_msf_module(module_type, module_name, module_args)
+            return {"result": result, "id": job_id}
+        except Exception as e:
+            return {"error": str(e), "id": job_id}
+
+    elif method == "msf_search":
+        keyword = params.get("keyword", "")
+        try:
+            result = search_msf_modules(keyword)
             return {"result": result, "id": job_id}
         except Exception as e:
             return {"error": str(e), "id": job_id}
