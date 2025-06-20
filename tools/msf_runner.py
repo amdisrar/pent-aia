@@ -1,4 +1,5 @@
 import os
+import time 
 from dotenv import load_dotenv
 from pymetasploit3.msfrpc import MsfRpcClient
 
@@ -32,19 +33,37 @@ def run_msf_module(module_type: str, module_name: str, params: dict) -> str:
     except Exception as e:
         return f"Module run error: {str(e)}"
 
-def exploit_with_payload(exploit_name: str, payload_name: str, exploit_args: dict, payload_args: dict) -> str:
+def exploit_with_payload(
+    exploit_name: str,
+    payload_name: str,
+    exploit_args: dict,
+    payload_args: dict
+) -> str:
+    """
+    Launch an exploit with a separate payload object.
+    Works for payloads that require LHOST/LPORT, e.g. reverse shells.
+    """
     try:
         client = _get_client()
-        exploit = client.modules.use('exploit', exploit_name)
-        exploit.payload = payload_name
 
+        # 1 – load exploit and payload as separate modules
+        exploit = client.modules.use("exploit", exploit_name)
+        payload = client.modules.use("payload", payload_name)
+
+        # 2 – set exploit-specific options (RHOSTS, RPORT, etc.)
         for k, v in exploit_args.items():
             exploit[k] = v
-        for k, v in payload_args.items():
-            exploit[k] = v
 
-        console = client.consoles.console()
-        return console.run_module_with_output(exploit).strip()
+        # 3 – set payload-specific options (LHOST, LPORT, etc.)
+        for k, v in payload_args.items():
+            payload[k] = v
+
+        # 4 – execute exploit with payload -> returns job-id / uuid
+        result = exploit.execute(payload=payload)
+
+        # 5 – return a human-readable summary
+        return f"Exploit launched: job_id={result['job_id']}, uuid={result['uuid']}"
+
     except Exception as e:
         return f"Exploit error: {str(e)}"
 
@@ -56,9 +75,33 @@ def list_sessions() -> dict:
         return {"error": str(e)}
 
 def interact_session(session_id: int, command: str) -> str:
+    """
+    Run a shell command in an active Metasploit session.
+    Works for both 'shell' and 'meterpreter' sessions.
+    """
     try:
         client = _get_client()
-        session = client.sessions.session(session_id)
-        return session.run_with_output(command).strip()
+
+        # Metasploit stores keys as strings
+        sid = str(session_id)
+
+        if sid not in client.sessions.list.keys():
+            return f"Session error: Session ID ({sid}) not found"
+
+        sess = client.sessions.session(sid)
+        sess_type = client.sessions.list[sid]["type"]
+
+        # For plain command-shell sessions
+        if sess_type == "shell":
+            sess.write(command + "\n")
+            time.sleep(1)                       # give target time to respond
+            return sess.read().strip()
+
+        # For Meterpreter sessions
+        if sess_type == "meterpreter" and hasattr(sess, "run_with_output"):
+            return sess.run_with_output(command).strip()
+
+        return f"Session error: Unsupported session type '{sess_type}'"
+
     except Exception as e:
         return f"Session error: {str(e)}"

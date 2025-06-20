@@ -2,6 +2,9 @@ from fastapi import FastAPI, Request
 from tools.nmap_runner import run_nmap
 from tools.msf_runner import run_msf_module
 from tools.msf_runner import search_msf_modules
+from tools.msf_runner import exploit_with_payload
+from tools.msf_runner import interact_session
+from tools.msf_runner import list_sessions
 
 from dotenv import load_dotenv
 
