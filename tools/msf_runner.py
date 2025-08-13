@@ -1,5 +1,5 @@
 import os
-import time 
+import time
 from dotenv import load_dotenv
 from pymetasploit3.msfrpc import MsfRpcClient
 

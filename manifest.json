@@ -1,0 +1,1 @@
+{"name":"Pentest AI","tools":[{"name":"nmap_scan","description":"Run Nmap scan on target with optional safe flags","params":["target","options"],"allowed_options":["-T4","-F","-O","-sV","-sC","-sU","-p-","-p<port>","-Pn","-n"]}]}
